@@ -8,7 +8,6 @@ require("dotenv").config();
 
 const router = express.Router();
 
-// Criação do transportador de e-mail (utilizando o Nodemailer)
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -17,7 +16,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Registro de usuário
 router.post("/register", async (req, res) => {
   const { username, email, password, cod } = req.body;
 
@@ -30,12 +28,9 @@ router.post("/register", async (req, res) => {
 
     console.log("Usuário não encontrado, prosseguindo com o registro.");
 
-    // Gerar o hash da senha
-
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log("Senha criptografada:", hashedPassword);
 
-    // Criar novo usuário
     const newUser = new User({
       username,
       email,
@@ -45,17 +40,14 @@ router.post("/register", async (req, res) => {
     console.log("Novo usuário criado:", newUser);
     console.log("Senha do usuario criado: ", hashedPassword);
 
-    // Salvar o usuário no banco de dados
     await newUser.save();
     console.log("Usuário salvo com sucesso.");
 
-    // Gerar o token JWT
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
     console.log("Token JWT gerado:", token);
 
-    // Enviar a resposta com o token
     res.status(201).json({ token, message: "Usuário registrado com sucesso!" });
   } catch (error) {
     console.error("Erro ao registrar o usuário:", error);
@@ -63,7 +55,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Login de usuário
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
@@ -92,7 +83,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Solicitar redefinição de senha
 router.post("/forgot-password", async (req, res) => {
   const { username } = req.body;
 
@@ -103,13 +93,11 @@ router.post("/forgot-password", async (req, res) => {
       return res.status(400).json({ message: "Usuário não encontrado!" });
     }
 
-    // Gerar token para redefinição de senha
     const token = crypto.randomBytes(20).toString("hex");
     user.resetPasswordToken = token;
-    user.resetPasswordExpires = Date.now() + 3600000; // 1 hora para expiração
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hora
     await user.save();
 
-    // Enviar o e-mail de redefinição de senha
     const resetUrl = `http://localhost:5000/api/auth/reset-password/${token}`;
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -134,7 +122,6 @@ router.post("/forgot-password", async (req, res) => {
   }
 });
 
-// Redefinir senha
 router.post("/reset-password/:token", async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
