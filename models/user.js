@@ -26,7 +26,6 @@ const userSchema = new mongoose.Schema({
   resetPasswordExpires: Date,
 });
 
-// Método para verificar a senha
 userSchema.methods.matchPassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
