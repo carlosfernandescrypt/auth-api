@@ -20,7 +20,7 @@
       LOGIN
     </button>
   </form>
-  <a href="#" class="custom-forgot-password">Lost your password?</a>
+  <a href="#" class="custom-forgot-password">Esqueceu sua senha?</a>
 </div>
 
 <style>
@@ -73,15 +73,13 @@
 </style>
 
 <script>
-  // Função de login
   function realizar_login(event) {
-    event.preventDefault(); // Previne o comportamento padrão do formulário
+    event.preventDefault();
 
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
-    // Fazendo a requisição de login
-    fetch("https://8aab-179-124-14-78.ngrok-free.app/api/auth/login", {
+    fetch("localhost:5000/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -96,9 +94,8 @@
         localStorage.setItem("token", data.token);
         console.log("Login bem-sucedido!");
 
-        // Redireciona o cliente para a página específica
         window.location.href =
-          "https://areacliente.oneelevadores.com.br/area-do-cliente";
+          "redirect.html";
       })
       .catch((error) => {
         console.error("Erro ao realizar login:", error);
@@ -106,7 +103,6 @@
       });
   }
 
-  // Adiciona um event listener para o formulário
   document
     .getElementById("login-form")
     .addEventListener("submit", realizar_login);
